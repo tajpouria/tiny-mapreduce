@@ -60,6 +60,14 @@ type CompleteTaskArgs struct {
 	Task Task
 }
 
+type GetMapOutputArgs struct {
+	Task Task
+}
+
+type GetMapOutputReply struct {
+	Res []KeyVal
+}
+
 type OkReply struct{}
 
 func RpcServer(rcvr any, sockname string) {
@@ -75,4 +83,15 @@ func RpcServer(rcvr any, sockname string) {
 	}
 	go http.Serve(listener, nil)
 	log.Printf("HTTP server is listening on unix address %v", sockname)
+}
+
+func RpcCall(sockname string, rpcname string, args interface{}, reply interface{}) error {
+	c, err := rpc.DialHTTP("unix", sockname)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+
+	err = c.Call(rpcname, args, reply)
+	return err
 }
