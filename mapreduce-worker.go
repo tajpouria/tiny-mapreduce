@@ -33,7 +33,7 @@ func NewWorker(pluginPath string) *Worker {
 	mapFunc, reduceFunc := utils.LoadFuncsPlugin(pluginPath)
 	nReduce := utils.NumReduceTask()
 	return &Worker{
-		id:             os.Getegid(),
+		id:             os.Getpid(),
 		mapFunc:        mapFunc,
 		reduceFunc:     reduceFunc,
 		nReduce:        nReduce,
@@ -96,7 +96,7 @@ func (w *Worker) GetMapOutput(args *utils.GetMapOutputArgs, reply *utils.GetMapO
 }
 
 func (w *Worker) runMap(t utils.Task) {
-	log.Printf("info: worker %d running map task %s (%s)", w.id, t.ID, t.InputAddr)
+	log.Printf("info: worker %d running map task %d (%s)", w.id, t.ID, t.InputAddr)
 	kvs := w.mapFunc(t.InputAddr, readSplit(t))
 
 	buckets := make([][]utils.KeyVal, w.nReduce)
@@ -284,7 +284,7 @@ func decoderSource(dec *json.Decoder) kvSource {
 
 func main() {
 	if len(os.Args) < 2 || len(os.Args) > 3 {
-		fmt.Fprintf(os.Stderr, "usage: mapreduce-worker <funcsplugin>.so")
+		fmt.Fprintf(os.Stderr, "usage: mapreduce-worker <funcsplugin>.so\n")
 		os.Exit(1)
 	}
 

@@ -16,7 +16,7 @@ func LoadFuncsPlugin(filename string) (
 ) {
 	p, err := plugin.Open(filename)
 	if err != nil {
-		log.Fatalf("cannot open func plugin %v", filename)
+		log.Fatalf("cannot open func plugin %v %v", filename, err)
 	}
 
 	xMap, err := p.Lookup("Map")

@@ -212,7 +212,9 @@ func (m *Master) complete(t utils.Task) {
 }
 
 func (m *Master) Done() bool {
-	return false
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return allDone(m.mapTasks) && allDone(m.reduceTasks)
 }
 
 func (m *Master) GetTask(args *utils.GetTaskArgs, reply *utils.GetTaskReply) error {
